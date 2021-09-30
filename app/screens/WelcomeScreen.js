@@ -10,7 +10,7 @@ import {
 import camFilled from "../assets/cam-filled.png";
 import bottomBox from "../assets/bottom-box.png";
 import { COLORS } from "../utilities/colors";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.topCtr}>
         <View style={styles.verifyCtr}>
-          <TouchableOpacity onPress={() => navigation.navigate("Camera")}>
+          <TouchableOpacity onPress={() => navigation.navigate("CameraScreen")}>
             <Image
               source={camFilled}
               style={{ width: 175, height: 175 }}
