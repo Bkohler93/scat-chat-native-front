@@ -8,21 +8,34 @@ import {
   Text,
 } from "react-native";
 import Button from "../components/Button";
+import Firebase from '../../config/firebase';
 import { useNavigation } from "@react-navigation/native";
 
 const dimensions = Dimensions.get("window");
 const inputHeight = Math.round((dimensions.height * 1) / 20);
 const inputWidth = Math.round((dimensions.width * 4) / 5);
-
 const smallCtrHeight = Math.round(dimensions.height * (3 / 4));
+
+const auth = Firebase.auth();
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const [username, setUsername] = useState(null);
+  const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [loginError, setLoginError] = useState('');
 
-  function loginClick() {
-    console.log(`username: ${username}\npassword: ${password} `);
+
+  async function loginClick() {
+    console.log(auth);
+    try  {
+      if (email !== '' && password !== '') {
+        auth.signInWithEmailAndPassword("brettkohler93@gmail.com", "hello1234");
+      }
+    } catch (err) {
+      console.log("Error with login");
+      setLoginError(err.message);
+    }
+    
   }
 
   function jumpInClick() {
@@ -34,9 +47,9 @@ export default function LoginScreen() {
         <View style={styles.inputCtr}>
           <TextInput
             style={styles.input}
-            placeholder={"Username"}
+            placeholder={"Email"}
             placeholderTextColor={"black"}
-            onChangeText={setUsername}
+            onChangeText={setEmail}
           />
           <TextInput
             style={styles.input}
@@ -55,10 +68,15 @@ export default function LoginScreen() {
               style={styles.registerLink}
               onPress={() => navigation.navigate("RegisterScreen")}
             >
-              Register Here
+              Create one here
             </Text>
           </View>
         </View>
+        {loginError !== '' && (
+          <View>
+            <Text>Error logging in</Text>
+            </View>
+        )}
         <Button
           style={styles.buttonFlexEnd}
           text={"Browse Scatchats"}
