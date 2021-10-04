@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import AppLoading from "expo-app-loading";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
 import LoginScreen from "./app/screens/LoginScreen";
 import CameraScreen from "./app/screens/CameraScreen";
 import RegisterScreen from "./app/screens/RegisterScreen";
+import ScatchatScreen from "./app/screens/ScatchatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import * as Font from "expo-font";
 const Stack = createNativeStackNavigator();
+export const userProfileContext = createContext({});
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -33,30 +36,37 @@ export default function App() {
     return <AppLoading />;
   }
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="WelcomeScreen"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CameraScreen"
-          component={CameraScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="RegisterScreen"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <userProfileContext.Provider value={{ userProfile, setUserProfile }}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="WelcomeScreen"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CameraScreen"
+            component={CameraScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RegisterScreen"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ScatchatScreen"
+            component={ScatchatScreen}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </userProfileContext.Provider>
   );
 }
 
