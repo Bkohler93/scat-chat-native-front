@@ -11,7 +11,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import * as Font from "expo-font";
 const Stack = createNativeStackNavigator();
-export const userProfileContext = createContext({});
+// export const userProfileContext = createContext({});
+import { userProfileContext } from "./app/utilities/userContext";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -45,6 +46,15 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="RegisterScreen"
+            component={RegisterScreen}
+            options={{
+              headerTitle: "Register",
+              headerShown: true,
+              headerBackTitleVisible: true,
+            }}
+          />
+          <Stack.Screen
             name="WelcomeScreen"
             component={WelcomeScreen}
             options={{ headerShown: false }}
@@ -52,11 +62,6 @@ export default function App() {
           <Stack.Screen
             name="CameraScreen"
             component={CameraScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="RegisterScreen"
-            component={RegisterScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

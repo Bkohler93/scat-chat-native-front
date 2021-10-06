@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
-import { userProfileContext } from "../../App";
+import { userProfileContext } from "../utilities/userContext";
 
 export default function ScatChatScreen() {
   const { userProfile } = useContext(userProfileContext);
