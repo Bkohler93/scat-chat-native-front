@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { userProfileContext } from "../../App";
+import { userProfileContext } from "../utilities/userContext";
 import {
   StyleSheet,
   View,
@@ -11,11 +11,13 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
+  Keyboard,
 } from "react-native";
 import Button from "../components/Button";
 import Firebase from "../../config/firebase";
 import { useNavigation } from "@react-navigation/core";
-import { ScatchatScreen } from "./ScatchatScreen";
+import { StatusBar } from "expo-status-bar";
+import { FontAwesome } from "@expo/vector-icons";
 
 const dimensions = Dimensions.get("window");
 const inputHeight = Math.round((dimensions.height * 1) / 20);
@@ -26,16 +28,63 @@ const auth = Firebase.auth();
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState(null);
-  const [confirmPassword, setConfirmPassword] = useState(null);
   const [password, setPassword] = useState(null);
-  const [passwordsMatch, setPasswordMatch] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(false);
+  const [hidePassword, setHidePassword] = useState(true);
   const { userProfile, setUserProfile } = useContext(userProfileContext);
+  const [inputError, setInputError] = useState(null);
 
   const navigation = useNavigation();
 
+  const inputsValid = () => {
+    setInputError(null);
+    const emailRegex = new RegExp("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]");
+    if (!emailRegex.test(email)) {
+      setInputError("invalidEmail");
+      return false;
+    }
+
+    if (password !== passwordMatch) {
+      console.log(password, passwordMatch);
+      setInputError("passwordsNotMatching");
+      return false;
+    }
+
+    if (password.length < 6) {
+      setInputError("passwordTooShort");
+      return false;
+    }
+    console.log("passed");
+    return true;
+  };
+
+  const changeConfirmPassword = (text) => {
+    setPasswordMatch(text);
+
+    if (text === "") {
+      setInputError(null);
+    }
+  };
+
+  const changeEmail = (text) => {
+    setEmail(text);
+
+    if (text === "") {
+      setInputError(null);
+    }
+  };
+
+  const changePassword = (text) => {
+    setPassword(text);
+
+    if (text === "") {
+      setInputError(null);
+    }
+  };
+
   async function registerClick() {
-    try {
-      if (email !== "" && password !== "" && password === confirmPassword) {
+    if (inputsValid()) {
+      try {
         console.log("submitting user data");
         const userRegister = await auth.createUserWithEmailAndPassword(
           email,
@@ -46,52 +95,110 @@ export default function RegisterScreen() {
           setUserProfile(userRegister);
           navigation.navigate("ScatchatScreen");
         }
+      } catch (err) {
+        console.log("Error registering user");
+        console.log(err);
+        setInputError("emailTaken");
       }
-    } catch (err) {
-      console.log("Error registering user");
-      console.log(err);
     }
   }
 
   return (
-    <TouchableWithoutFeedback>
+    <SafeAreaView style={styles.outterCtr}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.ctr}
+        keyboardVerticalOffset={-50}
       >
-        <View style={styles.smallCtr}>
-          <Text>Create your free account!</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={"Email"}
-            placeholderTextColor={"black"}
-            onChangeText={setEmail}
-          ></TextInput>
-          <TextInput
-            style={styles.input}
-            placeholder={"Password"}
-            placeholderTextColor={"black"}
-            onChangeText={setPassword}
-          ></TextInput>
-          <TextInput
-            style={styles.input}
-            placeholder={"Confirm Password"}
-            placeholderTextColor={"black"}
-            onChangeText={setConfirmPassword}
-          ></TextInput>
-          <Button text={"Submit"} handleClick={registerClick} />
-        </View>
+        <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss}
+          style={{ flex: 1, backgroundColor: "blue" }}
+        >
+          <View style={styles.smallCtr}>
+            <Text>Create your free account!</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={"Email"}
+              placeholderTextColor={"black"}
+              onChangeText={changeEmail}
+            ></TextInput>
+            {inputError === "emailTaken" && (
+              <View style={styles.errorCtr}>
+                <Text style={styles.errorText}>Email already in use.</Text>
+              </View>
+            )}
+            {inputError === "invalidEmail" && (
+              <View style={styles.errorCtr}>
+                <Text style={styles.errorText}>Invalid email format.</Text>
+              </View>
+            )}
+            <View style={styles.inputCtr}>
+              <TextInput
+                style={styles.input}
+                placeholder={"Password"}
+                placeholderTextColor={"black"}
+                onChangeText={changePassword}
+                secureTextEntry={hidePassword ? true : false}
+              ></TextInput>
+
+              <View style={styles.iconCtr}>
+                {hidePassword === false && (
+                  <FontAwesome
+                    name="eye"
+                    // backgroundColor="lightgrey"
+                    color="black"
+                    size={20}
+                    onPress={() => setHidePassword(true)}
+                  />
+                )}
+                {hidePassword === true && (
+                  <FontAwesome
+                    name="eye-slash"
+                    // backgroundColor="lightgrey"
+                    color="black"
+                    size={20}
+                    onPress={() => setHidePassword(false)}
+                  />
+                )}
+              </View>
+            </View>
+            {inputError === "passwordTooShort" && (
+              <View style={styles.errorCtr}>
+                <Text style={styles.errorText}>
+                  Passwords must contain more than six characters.
+                </Text>
+              </View>
+            )}
+
+            <TextInput
+              style={styles.input}
+              placeholder={"Confirm Password"}
+              placeholderTextColor={"black"}
+              onChangeText={changeConfirmPassword}
+              secureTextEntry={hidePassword ? true : false}
+            ></TextInput>
+            {inputError === "passwordsNotMatching" && (
+              <View style={styles.errorCtr}>
+                <Text style={styles.errorText}>Passwords do not match.</Text>
+              </View>
+            )}
+
+            <Button text={"Submit"} handleClick={registerClick} />
+          </View>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  ctr: {
-    // justifyContent: "space-around",
-    alignItems: "center",
+  outterCtr: {
     flex: 1,
-    marginTop: topMargin,
+    justifyContent: "center",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  ctr: {
+    flex: 1,
   },
   input: {
     height: inputHeight,
@@ -123,7 +230,28 @@ const styles = StyleSheet.create({
   },
   smallCtr: {
     height: smallCtrHeight,
-    // justifyContent: "space-around",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorCtr: {
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    borderLeftWidth: 1,
+    borderColor: "red",
+    width: inputWidth,
+    padding: 2,
+    marginLeft: 8,
+  },
+  errorText: {
+    color: "red",
+    paddingLeft: 5,
+    fontSize: 11,
+  },
+  iconCtr: {
+    position: "absolute",
+    right: 10,
+    top: inputHeight / 2,
+    justifyContent: "center",
     alignItems: "center",
   },
 });

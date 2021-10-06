@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { userProfileContext } from "../../App";
+import { userProfileContext } from "../utilities/userContext";
 import {
   View,
   StyleSheet,
@@ -11,11 +11,12 @@ import {
   Keyboard,
   Platform,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import Button from "../components/Button";
 import Firebase from "../../config/firebase";
 import { useNavigation } from "@react-navigation/native";
-import { ScatchatScreen } from "./ScatchatScreen";
+import { Header } from "react-native/Libraries/NewAppScreen";
 
 const dimensions = Dimensions.get("window");
 const inputHeight = Math.round((dimensions.height * 1) / 20);
@@ -33,8 +34,8 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState("");
 
   async function loginClick() {
-    try {
-      if (email !== "" && password !== "") {
+    if (email !== "" && password !== "") {
+      try {
         console.log(email, password);
         const userAuth = await auth.signInWithEmailAndPassword(email, password);
 
@@ -42,21 +43,37 @@ export default function LoginScreen() {
           setUserProfile(userAuth);
           navigation.navigate("ScatchatScreen");
         }
+      } catch (err) {
+        console.log("Error with login");
+        setLoginError("invalidLogin");
       }
-    } catch (err) {
-      console.log("Error with login");
-      setLoginError(err.message);
     }
   }
 
+  function changeEmail(text) {
+    setEmail(text);
+
+    if (text === "") {
+      setLoginError(null);
+    }
+  }
+
+  function changePassword(text) {
+    setPassword(text);
+
+    if (text === "") {
+      setLoginError(null);
+    }
+  }
   function jumpInClick() {
     console.log("heading into snapchat as anonymous");
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.ctr}
+        behavior="height"
+        enabled={true}
+        style={styles.avoidView}
       >
         <View style={styles.smallCtr}>
           <View style={styles.inputCtr}>
@@ -64,17 +81,30 @@ export default function LoginScreen() {
               style={styles.input}
               placeholder={"Email"}
               placeholderTextColor={"black"}
-              onChangeText={setEmail}
+              onChangeText={changeEmail}
             />
             <TextInput
               style={styles.input}
               placeholder={"Password"}
               secureTextEntry={true}
               placeholderTextColor={"black"}
-              onChangeText={setPassword}
+              onChangeText={changePassword}
             />
-            {/* <View style={styles.ctr}></View> */}
+            {loginError === "invalidLogin" && (
+              <View style={styles.errorCtr}>
+                <Text style={styles.errorText}>
+                  Login credentials are invalid.
+                </Text>
+              </View>
+            )}
+
             <Button text={"Login"} handleClick={loginClick} />
+            <View style={styles.lineBreakCtr}>
+              <View style={styles.lineBreak}></View>
+
+              <Text style={styles.lineBreakText}>OR</Text>
+              <View style={styles.lineBreak}></View>
+            </View>
             <View style={styles.registerCtr}>
               <Text style={styles.registerTxt}>
                 You can't post without an account!
@@ -87,11 +117,6 @@ export default function LoginScreen() {
               </Text>
             </View>
           </View>
-          {loginError !== "" && (
-            <View>
-              <Text>Error logging in</Text>
-            </View>
-          )}
           <Button
             style={styles.buttonFlexEnd}
             text={"Browse Scatchats"}
@@ -105,10 +130,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   ctr: {
-    justifyContent: "space-around",
-    alignItems: "center",
     flex: 1,
-    marginTop: topMargin,
+  },
+  avoidView: {
+    flex: 1,
+    justifyContent: "center",
   },
   input: {
     height: inputHeight,
@@ -139,8 +165,37 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   smallCtr: {
-    height: smallCtrHeight,
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  errorCtr: {
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    borderLeftWidth: 1,
+    borderColor: "red",
+    width: inputWidth,
+    padding: 2,
+    marginLeft: 8,
+  },
+  lineBreakCtr: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  lineBreak: {
+    borderBottomWidth: 1,
+    borderColor: "#ADACAC",
+    marginTop: 30,
+    marginBottom: 30,
+    width: inputWidth / 3,
+  },
+  lineBreakText: {
+    top: 20,
+  },
+  errorText: {
+    color: "red",
+    paddingLeft: 5,
+    fontSize: 11,
   },
 });
