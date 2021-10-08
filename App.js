@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import AppLoading from "expo-app-loading";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
@@ -8,15 +8,14 @@ import RegisterScreen from "./app/screens/RegisterScreen";
 import ScatchatScreen from "./app/screens/ScatchatScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as firebase from "firebase";
+import apiKeys from "./config/keys";
 
 import * as Font from "expo-font";
 const Stack = createNativeStackNavigator();
-// export const userProfileContext = createContext({});
-import { userProfileContext } from "./app/utilities/userContext";
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -31,47 +30,53 @@ export default function App() {
 
   useEffect(() => {
     loadFonts();
+    console.log("loaded fonts");
+    if (!firebase.apps.length) {
+      console.log("Connected with Firebase");
+      firebase.initializeApp(apiKeys.firebaseConfig);
+    } else {
+      console.log("Already connected to firebase");
+      firebase.app();
+    }
   }, []);
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
   return (
-    <userProfileContext.Provider value={{ userProfile, setUserProfile }}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="RegisterScreen"
-            component={RegisterScreen}
-            options={{
-              headerTitle: "Register",
-              headerShown: true,
-              headerBackTitleVisible: true,
-            }}
-          />
-          <Stack.Screen
-            name="WelcomeScreen"
-            component={WelcomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CameraScreen"
-            component={CameraScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ScatchatScreen"
-            component={ScatchatScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </userProfileContext.Provider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="LoginScreen"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RegisterScreen"
+          component={RegisterScreen}
+          options={{
+            headerTitle: "Register",
+            headerShown: true,
+            headerBackTitleVisible: true,
+          }}
+        />
+        <Stack.Screen
+          name="WelcomeScreen"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CameraScreen"
+          component={CameraScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ScatchatScreen"
+          component={ScatchatScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

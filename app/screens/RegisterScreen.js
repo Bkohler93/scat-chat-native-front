@@ -1,5 +1,4 @@
-import React, { useState, useContext } from "react";
-import { userProfileContext } from "../utilities/userContext";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -14,24 +13,22 @@ import {
   Keyboard,
 } from "react-native";
 import Button from "../components/Button";
-import Firebase from "../../config/firebase";
 import { useNavigation } from "@react-navigation/core";
 import { StatusBar } from "expo-status-bar";
 import { FontAwesome } from "@expo/vector-icons";
+import { registration } from "../../API/firebase";
 
 const dimensions = Dimensions.get("window");
 const inputHeight = Math.round((dimensions.height * 1) / 20);
 const inputWidth = Math.round((dimensions.width * 4) / 5);
 const smallCtrHeight = Math.round(dimensions.height * (3 / 4));
 const topMargin = Math.round((dimensions.height * 1) / 6);
-const auth = Firebase.auth();
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [passwordMatch, setPasswordMatch] = useState(false);
   const [hidePassword, setHidePassword] = useState(true);
-  const { userProfile, setUserProfile } = useContext(userProfileContext);
   const [inputError, setInputError] = useState(null);
 
   const navigation = useNavigation();
@@ -85,16 +82,7 @@ export default function RegisterScreen() {
   async function registerClick() {
     if (inputsValid()) {
       try {
-        console.log("submitting user data");
-        const userRegister = await auth.createUserWithEmailAndPassword(
-          email,
-          password
-        );
-
-        if (userRegister) {
-          setUserProfile(userRegister);
-          navigation.navigate("ScatchatScreen");
-        }
+        registration(email, password);
       } catch (err) {
         console.log("Error registering user");
         console.log(err);

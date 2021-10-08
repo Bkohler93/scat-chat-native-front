@@ -1,15 +1,23 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
-import { userProfileContext } from "../utilities/userContext";
+import { getEmails } from "../../API/firebase";
+import * as firebase from "firebase";
 
 export default function ScatChatScreen() {
-  const { userProfile } = useContext(userProfileContext);
-
+  const [email, setEmail] = useState(null);
   console.log("welcome in!");
-  console.log(userProfile);
+  console.log("hello");
+
+  useEffect(() => {
+    getEmails().then((email) => {
+      console.log("GOT IT");
+      setEmail(email);
+    });
+  }, []);
+
   return (
     <SafeAreaView style={styles.ctr}>
-      <Text>Hello world</Text>
+      <Text>Hello {email} WE DID IT</Text>
     </SafeAreaView>
   );
 }

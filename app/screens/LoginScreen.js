@@ -1,48 +1,48 @@
-import React, { useState, useContext } from "react";
-import { userProfileContext } from "../utilities/userContext";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
-  SafeAreaView,
   TextInput,
   Dimensions,
   Text,
   KeyboardAvoidingView,
   Keyboard,
-  Platform,
   TouchableWithoutFeedback,
-  ScrollView,
 } from "react-native";
 import Button from "../components/Button";
-import Firebase from "../../config/firebase";
 import { useNavigation } from "@react-navigation/native";
-import { Header } from "react-native/Libraries/NewAppScreen";
+import { signIn } from "../../API/firebase";
 
 const dimensions = Dimensions.get("window");
 const inputHeight = Math.round((dimensions.height * 1) / 20);
 const inputWidth = Math.round((dimensions.width * 4) / 5);
-const smallCtrHeight = Math.round(dimensions.height * (3 / 4));
-const topMargin = Math.round((dimensions.height * 1) / 6);
-
-const auth = Firebase.auth();
 
 export default function LoginScreen() {
-  const { userProfile, setUserProfile } = useContext(userProfileContext);
   const navigation = useNavigation();
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState("jennyssbuggtt@gmail.com");
+  const [password, setPassword] = useState("hello1234");
   const [loginError, setLoginError] = useState("");
+  const [keyboardStatus, setKeyboardStatus] = useState("Keyboard Hidden");
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus("Keyboard Shown");
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus("Keyboard Hidden");
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   async function loginClick() {
     if (email !== "" && password !== "") {
       try {
-        console.log(email, password);
-        const userAuth = await auth.signInWithEmailAndPassword(email, password);
-
-        if (userAuth) {
-          setUserProfile(userAuth);
-          navigation.navigate("ScatchatScreen");
-        }
+        signIn(email, password);
+        navigation.navigate("ScatchatScreen");
       } catch (err) {
         console.log("Error with login");
         setLoginError("invalidLogin");
@@ -51,7 +51,7 @@ export default function LoginScreen() {
   }
 
   function changeEmail(text) {
-    setEmail(text);
+    setEmail(text.trim());
 
     if (text === "") {
       setLoginError(null);
@@ -66,7 +66,7 @@ export default function LoginScreen() {
     }
   }
   function jumpInClick() {
-    console.log("heading into snapchat as anonymous");
+    navigation.navigate("ScatchatScreen");
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -97,14 +97,7 @@ export default function LoginScreen() {
                 </Text>
               </View>
             )}
-
             <Button text={"Login"} handleClick={loginClick} />
-            <View style={styles.lineBreakCtr}>
-              <View style={styles.lineBreak}></View>
-
-              <Text style={styles.lineBreakText}>OR</Text>
-              <View style={styles.lineBreak}></View>
-            </View>
             <View style={styles.registerCtr}>
               <Text style={styles.registerTxt}>
                 You can't post without an account!
@@ -116,12 +109,23 @@ export default function LoginScreen() {
                 Create one here!
               </Text>
             </View>
+
+            {keyboardStatus === "Keyboard Hidden" && (
+              <View style={styles.lineBreakCtr}>
+                <View style={styles.lineBreak}></View>
+
+                <Text style={styles.lineBreakText}>OR</Text>
+                <View style={styles.lineBreak}></View>
+              </View>
+            )}
           </View>
-          <Button
-            style={styles.buttonFlexEnd}
-            text={"Browse Scatchats"}
-            handleClick={jumpInClick}
-          />
+          {keyboardStatus === "Keyboard Hidden" && (
+            <Button
+              style={styles.buttonFlexEnd}
+              text={"Browse Scatchats"}
+              handleClick={jumpInClick}
+            />
+          )}
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
     borderColor: "#ADACAC",
     marginTop: 30,
     marginBottom: 30,
-    width: inputWidth / 3,
+    width: (inputWidth * 2) / 5,
   },
   lineBreakText: {
     top: 20,
