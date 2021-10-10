@@ -41,10 +41,11 @@ export default function LoginScreen() {
   async function loginClick() {
     if (email !== "" && password !== "") {
       try {
-        signIn(email, password);
+        await signIn(email, password);
         navigation.navigate("ScatchatScreen");
       } catch (err) {
         console.log("Error with login");
+        console.log(err);
         setLoginError("invalidLogin");
       }
     }
