@@ -79,15 +79,16 @@ export default function RegisterScreen() {
     }
   };
 
-  async function registerClick() {
+  function registerClick() {
     if (inputsValid()) {
-      try {
-        registration(email, password);
-      } catch (err) {
-        console.log("Error registering user");
-        console.log(err);
-        setInputError("emailTaken");
-      }
+      registration(email, password).then((err) => {
+        if (err) {
+          console.log(err);
+          setInputError("emailTaken");
+        } else {
+          navigation.navigate("ScatchatScreen");
+        }
+      });
     }
   }
 
