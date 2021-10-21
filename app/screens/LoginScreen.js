@@ -38,6 +38,7 @@ export default function LoginScreen() {
     checkUserAuth().then((res) => {
       if (res) {
         console.log("logged in");
+        navigation.navigate("ScatchatScreen");
       } else {
         console.log("not logged in");
       }
@@ -110,6 +111,7 @@ export default function LoginScreen() {
             placeholder={"Email"}
             placeholderTextColor={"black"}
             onChangeText={changeEmail}
+            autoCapitalize={false}
           />
           <View style={styles.inputCtr}>
             <TextInput
@@ -118,6 +120,7 @@ export default function LoginScreen() {
               secureTextEntry={hidePassword ? true : false}
               placeholderTextColor={"black"}
               onChangeText={changePassword}
+              autoCapitalize={false}
             />
             <View style={styles.iconCtr}>
               {hidePassword === false && (

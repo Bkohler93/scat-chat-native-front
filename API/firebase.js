@@ -37,8 +37,7 @@ export async function loggingOut() {
 export async function checkUserAuth() {
   try {
     const auth = await firebase.auth();
-    console.log(auth);
-    onAuthStateChanged(auth, (user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         return true;
       } else {
@@ -69,9 +68,21 @@ export async function getAllScats() {
     const db = firebase.firestore();
     const ref = db.collection("scats");
     const scatsData = await ref.get();
-    const scats = scatsData.data();
-    return scats;
+    return scatsData;
   } catch (err) {
     console.log("error retreiving scatchats", err);
+  }
+}
+
+export async function submitScat(scatChat) {
+  try {
+    console.log(scatChat);
+    const db = firebase.firestore();
+    const res = await db
+      .collection("scats")
+      .doc(scatChat.message_id)
+      .set(scatChat);
+  } catch (err) {
+    console.log("error submitting scat", err);
   }
 }

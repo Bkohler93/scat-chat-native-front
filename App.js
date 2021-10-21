@@ -24,6 +24,7 @@ export default function App() {
       RobotoBold: require("./app/assets/fonts/Roboto-Bold.ttf"),
       RobotoLight: require("./app/assets/fonts/Roboto-Light.ttf"),
       SourceCodePro: require("./app/assets/fonts/SourceCodePro-Black.ttf"),
+      JustAnotherHand: require("./app/assets/fonts/Just_Another_Hand/JustAnotherHand-Regular.ttf"),
     });
     setFontsLoaded(true);
   };
