@@ -26,6 +26,7 @@ export default function App() {
       SourceCodePro: require("./app/assets/fonts/SourceCodePro-Black.ttf"),
       JustAnotherHand: require("./app/assets/fonts/Just_Another_Hand/JustAnotherHand-Regular.ttf"),
     });
+    console.log("loaded fontsss");
     setFontsLoaded(true);
   };
 
@@ -53,6 +54,11 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="WelcomeScreen"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="RegisterScreen"
           component={RegisterScreen}
           options={{
@@ -60,11 +66,6 @@ export default function App() {
             headerShown: true,
             headerBackTitleVisible: true,
           }}
-        />
-        <Stack.Screen
-          name="WelcomeScreen"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="CameraScreen"

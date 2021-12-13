@@ -65,11 +65,11 @@ export default function CameraScreen() {
             setValidationStatus("valid");
           } else {
             console.log("NO TOILET FOUND");
-            setValidationStatus("valid");
+            setValidationStatus("invalid");
           }
         })
         .catch((err) => {
-          setValidationStatus("valid");
+          setValidationStatus("invalid");
         });
     }
   };

@@ -18,7 +18,7 @@ import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import CreateScat from "../components/CreateScat";
 const dimensions = Dimensions.get("window");
 const iconOffY = Math.round(dimensions.height / 12);
-const iconOffX = Math.round(dimensions.width / 7);
+const iconOffX = Math.round(dimensions.width / 13);
 const iconCtrSize = Math.round(dimensions.width / 5);
 const scatWidth = Math.round(dimensions.width * (5 / 6));
 

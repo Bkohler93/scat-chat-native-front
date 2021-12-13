@@ -111,7 +111,7 @@ export default function LoginScreen() {
             placeholder={"Email"}
             placeholderTextColor={"black"}
             onChangeText={changeEmail}
-            autoCapitalize={false}
+            autoCapitalize={"none"}
           />
           <View style={styles.inputCtr}>
             <TextInput
@@ -120,7 +120,7 @@ export default function LoginScreen() {
               secureTextEntry={hidePassword ? true : false}
               placeholderTextColor={"black"}
               onChangeText={changePassword}
-              autoCapitalize={false}
+              autoCapitalize={"none"}
             />
             <View style={styles.iconCtr}>
               {hidePassword === false && (

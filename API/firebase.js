@@ -10,6 +10,10 @@ export async function registration(email, password) {
     const db = firebase.firestore();
     db.collection("users").doc(currentUser.uid).set({
       email: currentUser.email,
+      language_filter: true,
+      time_warned: null,
+      time_created: new Date(),
+      warnings: 0,
     });
   } catch (err) {
     console.log("Problem creating account");
